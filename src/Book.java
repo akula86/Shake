@@ -3,6 +3,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.Iterator;
 
@@ -13,7 +15,7 @@ import java.util.Iterator;
  */
 public class Book {
     // Path for files
-    public static final String path = new String(System.getProperty("user.dir") +  File.separator);
+    public static final String path = new String(System.getProperty("user.dir") + File.separator);
     private ArrayList<Word> words = new ArrayList();
     private String sourceFile;
     private String sampleData = "Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.\n" +
@@ -23,6 +25,7 @@ public class Book {
 
     /**
      * Constructor that takes a filename to read in data. if filename is invalid, sample data will be used
+     *
      * @param filename
      */
     public Book(String filename) {
@@ -33,17 +36,17 @@ public class Book {
         // if filename is null or empty, load the sampleData
         if (filename.isEmpty() || filename == null) {
             loadSampleData();
-        }
-        else {
+        } else {
             // open file, read
             result = loadDataFromFile(filename);
-            if(!result)
-                System.out.println("unable to read from file: "+ filename);
+            if (!result)
+                System.out.println("unable to read from file: " + filename);
         }
     }
 
     /**
      * Method to read in the text from a file and store it in the ArrayList.
+     * use a Scanner to read in words using a delimiter string
      */
     private boolean loadDataFromFile(String filename) {
         boolean result = true;
@@ -51,65 +54,55 @@ public class Book {
         String line;
         String sMain, sNext;
         Word wMain, wNext;
+        Scanner scanner;
+        boolean flag = true;
 
         // make sure filename is not empty or null
-        if(filename.isEmpty() || filename == null)
+        if (filename.isEmpty() || filename == null)
             return false;
 
-        // try to open the file
-        try
-        {
-            dataFile = new File(this.path+filename);
+        try {
+            // try to open the file
+            dataFile = new File(this.path + filename);
 
-            // Create BufferedReader
-            BufferedReader br = new BufferedReader(new FileReader(dataFile));
+            // Create Scanner
+            scanner = new Scanner(dataFile);
 
-            //while loop to read each line in the configFile, one line at a time
-            // split the string, add each word to the words ArrayList
-            // if the line read in is null, then you've read all lines
-            while((line = br.readLine()) != null)
-            {
-                // split line into an array, with delimters
-                String[] arr = line.split("\\W+");
+            // Set delimiters to skip punctuation and numbers, allow apostrophe
+            scanner.useDelimiter("[^\\w']+");
 
-                // get first word (before entering the loop)
-                int i = 0;
-                sMain = arr[i];
+            // get first word (before entering the loop)
+            sMain = scanner.next();
 
-                // Add each word in the String array to the words ArrayList
-                do {
+            // while loop to read each word in the dataFile
+            // exit on the last word
+            while (flag) {
+                // Get next word, unless we're on the last element. If so, set it to empty
+                if (scanner.hasNext())
+                    sNext = scanner.next();
+                else {
+                    sNext = "";
+                    flag = false;
+                }
 
-                    // Get next word, unless we're on the last element. If so, set it to empty
-                    if (i + 1 == arr.length)
-                        sNext = "";
-                    else
-                        sNext = arr[i+1];
+                // Create Word objects
+                wMain = new Word(sMain);
+                wNext = new Word(sNext);
 
-                    // Create Word objects
-                    wMain = new Word (sMain);
-                    wNext = new Word (sNext);
+                // add the word to the list
+                addWord(wMain, wNext);
 
-                    // add the word to the list
-                    addWord(wMain, wNext);
-
-                    // Set sMain to sNext to get ready for next loop
-                    sMain = sNext;
-
-                    i++;
-                } while (i < arr.length);
-
+                // set sMain to sNext to get ready for next loop
+                sMain = sNext;
             }
-
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             // print stacktrace to the console and return false
             e.printStackTrace();
             result = false;
         }
 
         //just for fun
-        //printBookWithCounts();
+        printBookWithCounts();
 
         // if we get here, everything went well
         return result;
@@ -141,11 +134,11 @@ public class Book {
             if (i + 1 == arr.length)
                 sNext = "";
             else
-                sNext = arr[i+1];
+                sNext = arr[i + 1];
 
             // Create Word objects
-            wMain = new Word (sMain);
-            wNext = new Word (sNext);
+            wMain = new Word(sMain);
+            wNext = new Word(sNext);
 
             // add the word to the list
             addWord(wMain, wNext);
@@ -171,21 +164,18 @@ public class Book {
         wordExists = words.contains(wMain);
 
         // If it is in the list, increment the count, and give it wNext to store
-        if (wordExists)
-        {
+        if (wordExists) {
             // get the object and increment it's counter
             int index = words.indexOf(wMain);
             Word w = words.get(index);
             w.incrementCounter();
 
             // if wNext is not empty give w wNext so it can store it
-            if(wNext.toString() != "")
+            if (wNext.toString() != "")
                 w.addWordThatFollows(wNext);
-        }
-        else
-        {
+        } else {
             // if wNext is not empty give wMain wNext so it can store it
-            if(wNext.toString() != "")
+            if (wNext.toString() != "")
                 wMain.addWordThatFollows(wNext);
 
             // add wMain
@@ -196,7 +186,8 @@ public class Book {
     /**
      * Method to get the first word to start a new document. Logic to select the first word is to pick one out of
      * the ArrayList at random.
-     * @return  String for the first word in a new document
+     *
+     * @return String for the first word in a new document
      */
     public String getFirstWord() {
         int randomPosition = ThreadLocalRandom.current().nextInt(0, words.size());
@@ -206,11 +197,12 @@ public class Book {
 
     /**
      * Method to get a random word from the list of works that follow the one passed in.
+     *
      * @param word to look up
      * @return a String that follows the word passed in
      */
     public String getWordThatFollows(String word) {
-        int index, randomPosition=0;
+        int index, randomPosition = 0;
         Word wMain = new Word(word);
         Word wNext;
 
@@ -219,8 +211,7 @@ public class Book {
         wMain = words.get(index);
 
         // if a word doesn't have any followers, return a random word from the book
-        if(wMain.getNumWordsThatFollow() == 0)
-        {
+        if (wMain.getNumWordsThatFollow() == 0) {
             randomPosition = ThreadLocalRandom.current().nextInt(0, this.words.size());
             return this.words.get(randomPosition).toString();
         }
@@ -237,14 +228,25 @@ public class Book {
      * Fun method to print all words in the book with the number of occurrences
      */
     public void printBookWithCounts() {
-        // for fun - output all words and their count
+        int counter = 0;
+        int WORDS_PER_LINE = 10;
+
+        // sort the arraylist
+        Collections.sort(words);
+
+        // output all words and their count
         Iterator i = words.iterator();
-        System.out.println("The words in the book are:");
+
+        System.out.println("There are " + words.size() + " words in the source file (" + this.sourceFile + "). They are:");
         while (i.hasNext()) {
             Word ww = (Word) i.next();
-            System.out.println(ww.toString() + " " + ww.getNumOccurrences());
+            System.out.print(ww.toString() + " (" + ww.getNumOccurrences() + "), ");
+            if (++counter % WORDS_PER_LINE == 0)
+                System.out.println("\n");
 
         }
+        // one more to force a newline before any other text is output
+        System.out.println("\n");
     }
 
     /**
@@ -260,4 +262,12 @@ public class Book {
     public String getSourceFileName() {
         return this.sourceFile;
     }
+
+    /**
+     * Method to see if the word passed in is in the book object's words ArrayList
+     */
+    public boolean wordExists(Word word) {
+        return this.words.contains(word);
+    }
+
 }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
  * occurred in the source document.
  * The constructor takes a String object.
  */
-public class Word {
+public class Word implements Comparable {
     private String identityWord;
     private ArrayList<Word> wordsThatFollow = new ArrayList();
     int numOccurrences = 0;
@@ -84,5 +84,15 @@ public class Word {
         else
             return false;
     }
-
+    /**
+     * Override the compareTo method so the list can be sorted using Collections.sort(arraylist).
+     * method must return negative number if current object is less than other object,
+     * positive number if current object is greater than other object and
+     * zero if both objects are equal to each other.
+     */
+    @Override
+    public int compareTo(Object o) {
+        Word compareWord = (Word) o;
+        return (this.toString().compareTo(compareWord.toString()));
+    }
 }
