@@ -10,16 +10,18 @@ There are three command line parameters used:
 3. filename of the config file (which contains a list of files to read, one filename per line)
 
 Directory path for files is: `<userDirectory>/IdeaProjects/Shake/`
+
 Example directory:
 ```bash
 (base) [531] ~/IdeaProjects/Shake $ ll
 total 864
--rw-r--r--@ 1 i834513  staff      11 Jun 14 17:56 1.txt
 -rw-r--r--@ 1 i834513  staff  141939 Jun 14 01:06 combo.txt
+-rw-r--r--@ 1 i834513  staff       9 Jun 14 18:25 config1.txt
+-rw-r--r--@ 1 i834513  staff      13 Jun 14 18:27 config2.txt
 -rw-r--r--  1 i834513  staff   53033 Jun 14 01:18 const-dec.txt
 -rw-r--r--@ 1 i834513  staff   44952 Jun 14 00:11 constitution.txt
 -rw-r--r--@ 1 i834513  staff    8120 Jun 13 23:22 declaration.txt
 -rw-r--r--@ 1 i834513  staff   88904 Jun 14 01:05 macbeth.txt
 ```
 
-Example command line: `java Shake auto 650 1.txt`
+Example command line: `java Shake auto 650 config1.txt`
