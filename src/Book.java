@@ -102,7 +102,7 @@ public class Book {
         }
 
         //just for fun
-        printBookWithCounts();
+        //printBookWithCounts();
 
         // if we get here, everything went well
         return result;
@@ -113,7 +113,7 @@ public class Book {
      * Method to read in the text and store it in the ArrayList. In the future, a constructor will be created
      * to take a file name or file object and it will call initialize.
      */
-    private void loadSampleData() {
+    public void loadSampleData() {
         String sMain, sNext;
         Word wMain, wNext;
 
@@ -150,7 +150,7 @@ public class Book {
         } while (i < arr.length);
 
         //just for fun
-        printBookWithCounts();
+        //printBookWithCounts();
     }
 
     /**

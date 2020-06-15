@@ -17,8 +17,8 @@ import java.util.Scanner;
 public class Shake {
     // Path for files
     public static final String path = new String(System.getProperty("user.dir") +  File.separator);
-    private boolean isAuto;
-    private int numWordsToOutput;
+    private boolean isAuto = true;
+    private int numWordsToOutput = 650;
     private String configFilename;
     private ArrayList<String> filenames = new ArrayList<>();
     private Book book;
@@ -29,18 +29,20 @@ public class Shake {
     public static void main(String[] args) {
         Shake shake = new Shake();
 
-        if(!processCommandLineArgs(shake, args))
-            return;
-
-        // Create a new book
-        shake.book = new Book(shake.filenames.get(0));
+        if(!processCommandLineArgs(shake, args)){
+            // Use send a null string. Will cause Sample Data to be loaded and default values for isAuto mode and numWordsToOutput
+            shake.book = new Book("");
+        }
+        else {
+            // Create a new book
+            shake.book = new Book(shake.filenames.get(0));
+        }
 
         System.out.println("The book (" + shake.book.getSourceFileName() + ") has " + shake.book.getNumberOfWords() + " words in it");
 
         // generate the new document. Pass it the shake object so it has access to
         // isAuto, the book object(s) and number of words to output
         generateFile(shake);
-
     }
 
     /**
@@ -211,6 +213,6 @@ public class Shake {
         System.out.println("1. 'auto' or 'manual'. If manual is specified,  you will be prompted to select the first word");
         System.out.println("2. number of words to output (an integer)");
         System.out.println("3. filename of the config file (which contains a list of files to read)");
-        System.out.println("Directory path for files is: <userDirectory>/IdeaProjects/Shake/input");
+        System.out.println("Directory path for files is: <userDirectory>/IdeaProjects/Shake/");
     }
 }
